@@ -1,4 +1,5 @@
 
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
@@ -46,9 +47,11 @@ public class Main
        add(new Local(8, "Maida Vale"));
        add(new Local(9, "Toronto")); 
     }};
-    
+    public static String entrada_suspeito = "";
+    public static String entrada_arma = "";
+    public static String entrada_local = "";
     public static void main(String[] args) {
-       verificarTeoria();
+       iniciarTeoria();
     }
     private static Teoria criarTeoria(){
         try {
@@ -98,13 +101,104 @@ public class Main
         }
         return null;
     }
-    private static void verificarTeoria(){
+    private static void iniciarTeoria(){
+        String opcao = "";
         Scanner scanner = new Scanner(System.in);
-        String entrada = scanner.next().trim();
-        System.out.println(Util.validarPalavra(entrada, "[^0-9]"));
+        while(true){
+            System.out.println("1) Dar testemunho: ");
+            System.out.println("3) Sair");
+            opcao = scanner.next().trim();
+            
+            if(!(Util.validarPalavra(opcao, "[^0-9]"))){
+                int aux_op = Integer.parseInt(opcao);
+                if(aux_op == 1){
+                    if(entradaSuspeito(scanner)){
+                        if(entradaArma(scanner)){
+                            if(entradaLocal(scanner)){
+                                int aux_entrada_arma = Integer.parseInt(entrada_arma);
+                                int aux_entrada_suspeito = Integer.parseInt(entrada_suspeito);
+                                int aux_entrada_local = Integer.parseInt(entrada_local);
+                                
+                                Teo
+                                
+                            }else{
+                                System.out.println("Entrada inválida, tente novamente!");
+                            }
+                        }else{
+                            System.out.println("Entrada inválida, tente novamente!");
+                        }
+                    }else{
+                        System.out.println("Entrada inválida, tente novamente!");
+                    }
+                }else if(aux_op == 2){
+                    
+                }
+                else if(aux_op == 3){
+                    System.out.println("Você saiu");
+                    break;
+                }
+            }else{
+                System.out.println("Entrada inválida, tente novamente!");
+            }      
+        }
+    }
+    private static void verificarTeoria(Teoria teoria){
+        
+        for(Suspeito suspeito: suspeitos){
+            if(suspeito.id == teoria.suspeito.id){
+                break;
+            }    
+        }
+    }    
+    private static boolean entradaLocal(Scanner scanner){
+       System.out.println("Locais");
+       System.out.println("1, Redmond\n"+
+                         "2, Palo Alto\n"+
+                         "3, San Francisco\n"+
+                         "4, Restaurante no Fim do Universo\n"+
+                         "5, São Paulo\n"+
+                         "6, Cupertino\n"+
+                         "7, Helsinki\n"+
+                         "8, Maida Vale\n"+
+                         "9, Toronto\n");
+     System.out.println("Diga qual foi o local: ");
+     entrada_local = scanner.next().trim();
+     if(Util.validarPalavra(entrada_local, "[^0-9]"))
+        return false;
+     return true;
+    }
+    private static boolean entradaArma(Scanner scanner){
+        System.out.println("Armas");
+        System.out.println("1, Peixeira\n"+
+                           "2, DynaTAC 8000X\n"+
+                           "3, Trezoitão\n"+
+                           "4, Trebuchet\n"+
+                           "5, Maça\n"+
+                           "6, Gládio\n"
+        );
+        System.out.println("Diga qual foi a arma: ");
+        entrada_arma = scanner.next().trim();
+        if(Util.validarPalavra(entrada_arma, "[^0-9]"))
+           return false;
+        return true;
+    }
+    private static boolean entradaSuspeito(Scanner scanner){
+        System.out.println("Suspeitos\n");
+        System.out.println("1, Charles B. Abbage\n"+
+                           "2, Donald Duck Knuth\n"+
+                           "3, Ada L. Ovelace\n"+
+                           "4, Alan T. Uring\n"+
+                           "5, Ivar J. Acobson\n"+
+                           "6, Ras Mus Ler Dorf\n"
+                           );
+        System.out.println("Diga o suspeito: ");
+        entrada_suspeito = scanner.next().trim();
+        
+        if(Util.validarPalavra(entrada_suspeito, "[^0-9]"))
+            return false;
+        return true;
     }
 }
-
 class Util{
     public static Pattern returnPattern(String formato){
        return Pattern.compile(formato);
