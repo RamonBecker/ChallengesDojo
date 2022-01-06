@@ -77,6 +77,7 @@ public class Main
         System.out.println("Digite o valor que você quer sacar: ");
         try {
             Double valor = Double.parseDouble(scanner.next().trim());
+            conta.sacar(valor);
             List<Nota> notas_filtro = new ArrayList<>();
             Nota aux_nota_anterior = null;
             Nota aux_nota_calculo = null;
@@ -137,8 +138,12 @@ public class Main
                }
            }
            
+           
          troco.imprimirNotas();
-        } catch(Exception e) {
+        }catch(IllegalArgumentException e){
+            System.out.println(e.getMessage());
+        } 
+        catch(Exception e) {
             System.out.println("Valor digitado inválido!");
         }
     }
@@ -187,9 +192,10 @@ class Troco{
     }
     
     public void imprimirNotas(){
+        System.out.println("TROCO");
         for (Nota nota: notas ){
             if(nota.quantidade > 0){
-                System.out.println("Valor da nota: "+nota.valor+ ", quantidade: "+nota.quantidade);
+                System.out.println("Nota: "+nota.valor+ ", quantidade: "+nota.quantidade);
             }
         } 
     }
@@ -213,9 +219,6 @@ class Troco{
                  break;
             }
         }
-        System.out.println("----------------");
-        System.out.println("BUSCA: "+nota);
-        System.out.println("----------------");
         if(aux_indice > -1){
             aux_nota_buscada = notas.get(aux_indice);
             if(aux_nota_buscada != null){
@@ -249,8 +252,9 @@ class Conta{
       }
       if(!(valor > saldo)){
          this.saldo = this.saldo - valor;
+      }else{
+        throw new IllegalArgumentException("Não foi possível sacar, saldo insuficiente!");
       }
-      throw new IllegalArgumentException("Não foi possível sacar, saldo insuficiente!");
   }
   
   public void depositar(Double valor){
