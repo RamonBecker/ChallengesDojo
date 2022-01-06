@@ -1,4 +1,3 @@
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
@@ -74,37 +73,71 @@ public class Main
     }
     
     private static void sacar(Scanner scanner){
+        troco = new Troco();
         System.out.println("Digite o valor que você quer sacar: ");
         try {
             Double valor = Double.parseDouble(scanner.next().trim());
             List<Nota> notas_filtro = new ArrayList<>();
             Nota aux_nota_anterior = null;
+            Nota aux_nota_calculo = null;
             Nota aux_nota = new Nota();
             Nota aux_nota_atual = new Nota();
-            
+
             for(Nota nota : troco.notas){
                 if(nota.valor <= valor){
                     notas_filtro.add(nota);
                 }
             }
            
-           for(Nota nota:  notas_filtro){
-               if(aux_nota_anterior == null) {
-                  aux_nota.valor =  valor - nota.valor;
-                  aux_nota_atual.valor = aux_nota.valor;
+           boolean encontrou_valor = false;
+           while(true){
+               for(Nota nota:  notas_filtro){
+                   if(aux_nota_anterior == null) {
+                       aux_nota.valor = valor - nota.valor;
+                       aux_nota_anterior = new Nota();
+                       aux_nota_anterior.valor = nota.valor;
+                       aux_nota_atual.valor = nota.valor;
+                   }
+                   else if(aux_nota_anterior != null){
+                       if(aux_nota_calculo == null){
+                           aux_nota_calculo = new Nota();
+                       }
+                       if(aux_nota_calculo != null){
+                           if(aux_nota_anterior.valor - aux_nota.valor > 0){
+                                aux_nota_calculo.valor = aux_nota_anterior.valor - aux_nota.valor;
+                           }
+                           else if(aux_nota_anterior.valor - aux_nota.valor < 0){
+                               aux_nota_calculo.valor = aux_nota.valor - aux_nota_anterior.valor ;
+                           }
+                           
+                           if(aux_nota_calculo.valor > 100.0){
+                               aux_nota_calculo.valor = 100.0;
+                           }
+                           
+                           aux_nota_anterior.valor = aux_nota.valor;
+                           aux_nota.valor = aux_nota_calculo.valor;
+                           aux_nota_atual.valor += aux_nota_calculo.valor;
+                       }
+                   }
+                   
+                   if(Double.compare(aux_nota_atual.valor, valor) == 1){
+                       encontrou_valor = true;
+                       break;
+                   }
+                   
+                   if(aux_nota_calculo == null){
+                       troco.atualizarNota(nota);
+                   }else{
+                       troco.atualizarNota(aux_nota_calculo);
+                   }
                }
-               else if(aux_nota_anterior != null){
-                   aux_nota.valor = aux_nota_anterior.valor - aux_nota.valor;
-                   aux_nota_atual.valor += aux_nota.valor;
+               
+               if(encontrou_valor){
+                   break;
                }
-                aux_nota_anterior = nota;
-               System.out.println("Anterior:"+aux_nota_anterior);
-               System.out.println(aux_nota.valor);
-               System.out.println("SOMA: "+aux_nota_atual.valor);
            }
            
-           System.out.println(notas_filtro);
-          
+         troco.imprimirNotas();
         } catch(Exception e) {
             System.out.println("Valor digitado inválido!");
         }
@@ -117,6 +150,8 @@ class Nota{
     public Integer quantidade;
     
     public Nota(){
+        this.valor = 0.0;
+        this.quantidade = 0;
     }
     
     public Nota(Double valor){
@@ -139,6 +174,26 @@ class Nota{
 }
 class Troco{
     public List<Nota> notas;
+    public Troco(){
+        inicializarNotas();
+    }
+    private void inicializarNotas(){
+        this.notas = new ArrayList<>();
+        this.notas.add(new Nota(100.0,0));
+        this.notas.add(new Nota(50.0,0));
+        this.notas.add(new Nota(20.0,0));
+        this.notas.add(new Nota(10.0,0));
+        this.notas.add(new Nota(5.0,0));
+    }
+    
+    public void imprimirNotas(){
+        for (Nota nota: notas ){
+            if(nota.quantidade > 0){
+                System.out.println("Valor da nota: "+nota.valor+ ", quantidade: "+nota.quantidade);
+            }
+        } 
+    }
+    
     public Double valorTotal(){
         Double soma = 0.0;
         for(Nota nota : notas){
@@ -149,20 +204,29 @@ class Troco{
         return soma;
     }
     
-    public Troco(){
-        inicializarNotas();
+    public void atualizarNota(Nota nota){
+        Nota aux_nota_buscada = null;
+        int aux_indice = -1;        
+        for(int i = 0; i < notas.size(); i ++){
+            if(Double.compare(notas.get(i).valor, nota.valor) == 0) {
+                 aux_indice = i;
+                 break;
+            }
+        }
+        System.out.println("----------------");
+        System.out.println("BUSCA: "+nota);
+        System.out.println("----------------");
+        if(aux_indice > -1){
+            aux_nota_buscada = notas.get(aux_indice);
+            if(aux_nota_buscada != null){
+                aux_nota_buscada.quantidade++;
+                notas.remove(aux_indice);
+                notas.add(aux_indice, aux_nota_buscada);
+            }
+        }
     }
-    private void inicializarNotas(){
-
-        this.notas = new ArrayList<>();
-        this.notas.add(new Nota(100.0,0));
-        this.notas.add(new Nota(50.0,0));
-        this.notas.add(new Nota(25.0,0));
-        this.notas.add(new Nota(20.0,0));
-        this.notas.add(new Nota(15.0,0));
-        this.notas.add(new Nota(10.0,0));
-        this.notas.add(new Nota(5.0,0));
-    }
+    
+    
     @Override
     public String toString(){
         return ""+this.notas;
@@ -218,6 +282,3 @@ class Util{
         return search(palavra, pattern);
     }
 }
-
-
-
